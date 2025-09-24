@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export class AdminService {
   
 
-exportStudents() {
+async exportStudents() {
   console.log('Export process started in the background...');
 
   // Simula uma operação demorada sem bloquear a resposta

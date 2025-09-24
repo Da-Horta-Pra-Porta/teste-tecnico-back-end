@@ -1,12 +1,38 @@
 version: '3.8'
+
 services:
-  db:
-    image: postgres:14
-    container_name: da-horta-db
+  # Serviço do Banco de Dados (PostgreSQL) - sem alterações
+  postgres:
+    image: postgres:latest
+    container_name: database_app
     restart: always
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: docker
-      POSTGRES_PASSWORD: docker
-      POSTGRES_DB: dahorta
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=app
+    volumes:
+      - pgdata:/data/postgres
+
+  # Novo Serviço do Servidor Back-end (Node.js)
+  server:
+    container_name: server_app
+    # Constrói a imagem a partir do Dockerfile na pasta atual (.)
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3333:3333"
+    # Define as variáveis de ambiente necessárias para a aplicação
+    environment:
+      - DATABASE_URL=postgresql://docker:docker@postgres:5432/app
+      - JWT_SECRET=seu-jwt-secret-aqui # Troque por um segredo forte
+      - PORT=3333
+    # Garante que o container do banco de dados inicie antes do servidor
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata: {}

@@ -18,7 +18,6 @@ const isProfessor = (req: Request, res: Response, next: NextFunction) => {
 // Usamos o authMiddleware primeiro, depois o isProfessor
 adminRoutes.get('/admin/students', authMiddleware, isProfessor, adminController.listStudents);
 
-adminRoutes.get('/admin/students', authMiddleware, isProfessor, adminController.listStudents);
 
 // Rota para criar um novo aluno (NOVA)
 adminRoutes.post('/admin/students', authMiddleware, isProfessor, adminController.createStudent); 

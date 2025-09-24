@@ -4,6 +4,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import authRoutes from './modules/auth/routes/auth.routes';
 import adminRoutes from './modules/admin/routes/admin.routes'; 
 import studentRoutes from './modules/student/routes/student.routes'; 
+import { producerRoutes } from './modules/producers/routes/producer.routes';
+import { dashboardRoutes } from './modules/dashboard/routes/dashboard.routes';
+
 
 const app = express();
 
