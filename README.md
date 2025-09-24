@@ -1,93 +1,93 @@
-# Teste Técnico: API para Sistema de Gestão Acadêmica
+# Meu Desafio Backend: Da Horta Pra Porta
 
-## Introdução
+E aí! Esse aqui é o meu projeto pro desafio da Da Horta Pra Porta. É uma APIzinha que fiz pra cuidar dos produtores rurais e também tem umas estatísticas no dashboard.
 
-Olá, candidato! Este desafio tem como objetivo avaliar suas habilidades na construção de uma API RESTful robusta, segura e bem documentada. Você deverá construir o back-end que servirá a uma aplicação de front-end.
+---
 
-O foco não está apenas em fazer a API funcionar, mas em como ela é projetada, testada e preparada para o ambiente de produção.
+## 🚀 Como fazer isso aqui rodar na sua máquina
 
-## Contexto: A Aplicação Front-end
+Pra ver o projeto funcionando, você vai precisar de algumas coisas antes.
 
-A API que você construirá deve servir a uma aplicação com duas personas principais:
+### O básico que você precisa ter:
 
-1.  **Professor (Admin):** Faz login, visualiza uma lista de *todos* os seus alunos, suas notas, médias e situação. Ele também poderá gerenciar os alunos e suas notas.
-2.  **Aluno:** Faz login e visualiza *apenas* suas próprias notas, média e situação.
+* **Git**
+* **Node.js e npm** (o que for mais recente já ajuda)
+* **Docker Desktop** (esse é crucial! Tem que estar **aberto e rodando** no seu PC/Mac. Pensa nele como a "bateria" do banco de dados.)
+* Um **Postman** ou **Insomnia** pra testar a API depois.
 
-## Escopo Mínimo (MVP - O Essencial)
+### Os passos pra botar pra funcionar:
 
-Primeiramente, você deve construir a base que atenda aos requisitos da aplicação.
+1.  **Pegar o código:**
+    Primeiro, clona o projeto (ou o seu fork) e entra na pasta:
 
-1.  **Modelagem de Dados:**
-    * Crie modelos para `Usuários` (com diferenciação de papel/role: `PROFESSOR`, `ALUNO`) e `Notas`.
-    * Um usuário deve ter no mínimo: `id`, `firstName`, `lastName`, `email`, `password` (armazenado de forma segura com hash) e `role`.
-    * As notas devem estar associadas a um aluno.
+    ```bash
+    git clone [https://github.com/felipesergio353/teste-tecnico-back-end.git](https://github.com/felipesergio353/teste-tecnico-back-end.git)
+    cd teste-tecnico-back-end
+    ```
 
-2.  **Autenticação:**
-    * Crie um endpoint de `POST /login`.
-    * Ele deve receber `email` e `password`, validar as credenciais e, em caso de sucesso, retornar um token JWT (JSON Web Token).
-    * O payload do token deve conter informações essenciais como o `userId` e o `role` do usuário.
+    Aí, instala tudo que precisa:
 
-3.  **Endpoints Principais (Protegidos por Autenticação):**
-    * **Para o Professor:**
-        * `GET /admin/students`: Retorna uma lista de todos os alunos, incluindo o cálculo de `average` e `situation`. Apenas usuários com o papel `PROFESSOR` podem acessar.
-    * **Para o Aluno:**
-        * `GET /student/scores`: Retorna as notas, a média e a situação *apenas do aluno autenticado*, utilizando o `userId` do token JWT. Apenas usuários com o papel `ALUNO` podem acessar.
+    ```bash
+    npm install
+    ```
 
-## Funcionalidades Adicionais (Diferenciais)
+2.  **Configurar o banco (o famoso `.env`):**
+    A gente usa um arquivo `.env` pra API saber onde está o banco. Copia o exemplo pra criar o seu:
 
-Esta é a parte que nos permitirá ver sua experiência em ação. Esperamos que você implemente várias das funcionalidades abaixo para demonstrar profundidade técnica.
+    ```bash
+    cp .env.example .env
+    ```
+    Só confere se a linha `DATABASE_URL` no seu `.env` tá assim:
+    `DATABASE_URL="postgresql://docker:docker@localhost:5432/dahorta?schema=public"`
 
-### 1. Operações de Gerenciamento (CRUD Completo)
-* **Requisito:** Permita que o professor gerencie seus alunos.
-* **Endpoints a serem criados:**
-    * `POST /admin/students`: Cria um novo aluno.
-    * `PUT /admin/students/{studentId}`: Atualiza os dados e/ou as notas de um aluno. Os campos `average` e `situation` devem ser recalculados.
-    * `DELETE /admin/students/{studentId}`: Remove um aluno do sistema.
+3.  **Ligar o banco de dados (via Docker):**
+    **Importantíssimo:** O **Docker Desktop tem que estar aberto e funcionando** (o ícone da baleia tem que estar paradinho lá em cima na sua barra de tarefas/menus). Se não estiver, a API não vai achar o banco.
 
-### 2. API Design e Boas Práticas
-* **Requisito:** A API deve ser robusta e fácil de usar.
-* **Implementação:**
-    * **Paginação:** O endpoint `GET /admin/students` deve ser paginado (ex: `?page=1&limit=20`).
-    * **Filtros e Buscas:** Adicione a capacidade de filtrar e buscar alunos no mesmo endpoint (ex: `?situation=Aprovado` ou `?name=Fábio`).
-    * **Validação de Entrada (Input Validation):** Utilize uma biblioteca (como Zod, Joi, etc.) para garantir que os dados de entrada (payloads de `POST` e `PUT`) estão corretos. Ex: notas devem ser números entre 0 e 10.
+    Depois disso, manda ver pra subir o PostgreSQL:
 
-### 3. Arquitetura e Qualidade de Código
-* **Requisito:** O código deve ser limpo, organizado e testável.
-* **Implementação:**
-    * Aplique princípios de design como **SOLID**.
-    * Separe as responsabilidades em camadas (ex: Controllers, Services, Repositories).
-    * **Testes Automatizados:** Crie testes unitários para a lógica de negócio (ex: cálculo da média) e testes de integração para os endpoints da API.
+    ```bash
+    docker compose up -d
+    ```
+    Se der zica aqui, quase certeza que o Docker Desktop não estava 100%. Dá uma olhada nele e tenta de novo.
 
-### 4. Performance e Tarefas Assíncronas
-* **Requisito:** Lidar com operações que podem ser demoradas.
-* **Implementação:**
-    * Crie um endpoint `POST /admin/students/export` que inicie a geração de um relatório em CSV com os dados de todos os alunos.
-    * Esta operação **não** deve bloquear a resposta. O endpoint deve retornar imediatamente um status `202 Accepted`. A geração do CSV deve ocorrer em background (pode ser simulada ou implementada com ferramentas como BullMQ, etc.).
+4.  **Criar as tabelas no banco (com Prisma):**
+    Com o banco de dados de pé, o Prisma precisa organizar as tabelas. Roda essa:
 
-## Tecnologias
+    ```bash
+    npx prisma migrate dev --name initial-migration
+    ```
 
-* **Linguagem/Framework:** O back-end **deve** ser desenvolvido em **Node.js**. O candidato tem a liberdade de escolher o framework que preferir (Express, NestJS, Fastify, Koa, etc.), mas deve justificar a escolha no `README.md`.
-* **Banco de Dados:** A escolha é livre (PostgreSQL, MySQL, MongoDB), mas deve ser configurada para rodar via Docker. O uso de um ORM (como Prisma, TypeORM, Sequelize) é recomendado.
-* **Containerização:** O projeto final **obrigatoriamente** precisa ser entregue com `Dockerfile` e `docker-compose.yml` para que a aplicação e seu banco de dados possam ser iniciados com um único comando (`docker-compose up`).
+5.  **Ligar a API:**
+    Último passo! Acende a API:
 
-## Entregáveis
+    ```bash
+    npm run dev
+    ```
+    Quando você vir `Server is running on port 3333` no terminal, pronto! A API tá no ar e esperando as chamadas.
 
-1.  **Repositório no GitHub:** O código-fonte deve ser disponibilizado em um repositório público.
-2.  **README.md detalhado:** Este é um dos itens mais importantes. O `README` deve conter:
-    * O nome do candidato.
-    * Justificativa das escolhas tecnológicas (framework, banco de dados, etc.).
-    * Explicação da arquitetura do projeto.
-    * Instruções claras para rodar o projeto localmente com Docker.
-    * Instruções sobre como popular o banco de dados com dados iniciais (seed), se aplicável.
-    * **Documentação da API:** É **obrigatório** documentar todos os endpoints. O formato é flexível (ex: um Postman Collection, um arquivo Swagger/OpenAPI, ou uma seção detalhada no próprio README descrevendo cada endpoint, seus parâmetros, payload e retornos esperados).
+---
 
-## Critérios de Avaliação
+## 🧪 Pra Testar na Prática (Postman/Insomnia)
 
-* **Funcionalidade:** O MVP e os pontos de complexidade escolhidos funcionam como esperado?
-* **Qualidade do Código:** Clareza, organização, legibilidade e manutenibilidade.
-* **Design de API:** Aderência aos princípios REST, uso correto de verbos HTTP e códigos de status.
-* **Arquitetura:** Separação de responsabilidades e aplicação de padrões de design.
-* **Modelagem do Banco de Dados:** Estrutura das tabelas/coleções e seus relacionamentos.
-* **Testes:** Qualidade e cobertura dos testes automatizados.
-* **Documentação:** Clareza e completude da documentação do projeto e da API.
-* **DevOps:** Qualidade e funcionalidade dos arquivos Docker e do `docker-compose`.
+Com a API ligada (passo 5), você pode usar o Postman/Insomnia pra mandar umas requisições.
+
+* **Endereço Base:** `http://localhost:3333`
+
+* **Pra criar um Produtor:**
+    * **Método:** `POST`
+    * **Rota:** `/producers`
+    * **No Body (Corpo da requisição):** Manda um JSON com os dados do produtor. No Postman, escolhe `raw` e `JSON`. Ah, e o CPF/CNPJ tem que ser válido! Pega um num gerador online tipo 4Devs.
+
+* **Pra ver a lista de Produtores:**
+    * **Método:** `GET`
+    * **Rota:** `/producers`
+
+* **Pra ver as estatísticas (Dashboard):**
+    * **Método:** `GET`
+    * **Rota:** `/dashboard`
+
+---
+
+## 👨‍💻 Feito por
+
+Felipe Sergio
