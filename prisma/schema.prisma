@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,23 +9,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Producer {
-  id             String    @id @default(uuid())
-  cpfCnpj        String    @unique
-  name           String
-  farmName       String
-  city           String
-  state          String
-  totalArea      Float
-  arableArea     Float
-  vegetationArea Float
-  cultures       Culture[]
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+// Enum para definir os papéis dos usuários
+enum Role {
+  PROFESSOR
+  ALUNO
 }
 
-model Culture {
-  id        String     @id @default(uuid())
-  name      String     @unique
-  producers Producer[]
+// Modelo para Usuários (tanto professores quanto alunos)
+model User {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String   // Armazenaremos o hash da senha aqui
+  role      Role
+
+  // Relacionamento: Se o usuário for um aluno, ele terá notas.
+  scores    Score[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Modelo para as Notas de um aluno
+model Score {
+  id     String @id @default(uuid())
+  value  Float  // A nota, ex: 7.5
+
+  // Relacionamento: Cada nota pertence a um aluno
+  student   User   @relation(fields: [studentId], references: [id])
+  studentId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -1,90 +1,117 @@
-# Meu Desafio Backend: Da Horta Pra Porta
+# Desafio Backend - Sistema de Notas
 
-E aí! Esse aqui é o meu projeto pro desafio da Da Horta Pra Porta. É uma APIzinha que fiz pra cuidar dos produtores rurais e também tem umas estatísticas no dashboard.
+E aí! Esse aqui é o meu projeto para o desafio de backend. Criei uma API em Node.js para um sistema de gerenciamento de notas, com perfis para professores e alunos.
 
 ---
 
-## 🚀 Como fazer isso aqui rodar na sua máquina
+## 🚀 Stack e escolhas
 
-Pra ver o projeto funcionando, você vai precisar de algumas coisas antes.
+* **Node.js com Express e TypeScript:** Escolhi essa combinação porque o Express é super leve e flexível, o que me deu total controle sobre a estrutura. O TypeScript entra pra garantir um código mais seguro e fácil de manter.
+* **Prisma ORM com PostgreSQL:** Prisma é incrível para trabalhar com TypeScript, a integração é muito boa e o schema é fácil de entender. O PostgreSQL é um banco de dados robusto que eu já conhecia.
+* **Docker:** Usei Docker pra containerizar o banco de dados. Assim, qualquer pessoa que clonar o projeto só precisa ter o Docker rodando pra que o banco suba sem dor de cabeça.
+* **JWT e bcryptjs:** Para a parte de segurança, usei JWT para autenticação baseada em token (depois do login) e bcryptjs pra nunca salvar senhas em texto puro no banco.
+* **Zod:** Pra validar os dados que chegam na API. É bem simples e se integra super bem com o TypeScript.
 
-### O básico que você precisa ter:
+---
+
+## 🏗️ Como o projeto tá organizado
+
+A estrutura do código foi pensada pra ser fácil de entender e dar manutenção. A lógica principal fica em `src/modules/`, separada por responsabilidade:
+
+* **`controllers/`**: Lidam com as requisições e respostas HTTP.
+* **`services/`**: Onde mora a lógica de negócio (cálculos, chamadas pro banco, etc.).
+* **`routes/`**: Define os endpoints da API (ex: `/login`, `/admin/students`).
+* **`middlewares/`**: Funções que rodam no meio da requisição, como a que verifica se o usuário tá logado.
+
+---
+
+## 🛠️ Como Rodar o Projeto
+
+Pra fazer a API funcionar, você vai precisar de algumas coisinhas instaladas.
+
+### O que você precisa ter na máquina:
 
 * **Git**
-* **Node.js e npm** (o que for mais recente já ajuda)
-* **Docker Desktop** (esse é crucial! Tem que estar **aberto e rodando** no seu PC/Mac. Pensa nele como a "bateria" do banco de dados.)
-* Um **Postman** ou **Insomnia** pra testar a API depois.
+* **Node.js e npm**
+* **Docker Desktop** (esse é o mais importante! Tem que estar **aberto e rodando**).
 
-### Os passos pra botar pra funcionar:
+### Passos pra subir a API:
 
-1.  **Pegar o código:**
-    Primeiro, clona o projeto (ou o seu fork) e entra na pasta:
-
+1.  **Pega o código e instala as dependências:**
     ```bash
     git clone [https://github.com/felipesergio353/teste-tecnico-back-end.git](https://github.com/felipesergio353/teste-tecnico-back-end.git)
     cd teste-tecnico-back-end
-    ```
-
-    Aí, instala tudo que precisa:
-
-    ```bash
     npm install
     ```
 
-2.  **Configurar o banco (o famoso `.env`):**
-    A gente usa um arquivo `.env` pra API saber onde está o banco. Copia o exemplo pra criar o seu:
-
+2.  **Configura o `.env`:**
+    A API precisa saber onde o banco de dados está. É só copiar o arquivo de exemplo:
     ```bash
     cp .env.example .env
     ```
-    Só confere se a linha `DATABASE_URL` no seu `.env` tá assim:
-    `DATABASE_URL="postgresql://docker:docker@localhost:5432/dahorta?schema=public"`
 
-3.  **Ligar o banco de dados (via Docker):**
-    **Importantíssimo:** O **Docker Desktop tem que estar aberto e funcionando** (o ícone da baleia tem que estar paradinho lá em cima na sua barra de tarefas/menus). Se não estiver, a API não vai achar o banco.
-
-    Depois disso, manda ver pra subir o PostgreSQL:
-
+3.  **Sobe o banco com Docker:**
+    **Garante que o Docker Desktop tá aberto e funcionando!**
     ```bash
     docker compose up -d
     ```
-    Se der zica aqui, quase certeza que o Docker Desktop não estava 100%. Dá uma olhada nele e tenta de novo.
 
-4.  **Criar as tabelas no banco (com Prisma):**
-    Com o banco de dados de pé, o Prisma precisa organizar as tabelas. Roda essa:
-
+4.  **Prepara o banco de dados:**
+    Esse comando cria as tabelas e já coloca um professor e um aluno lá dentro pra gente poder testar:
     ```bash
-    npx prisma migrate dev --name initial-migration
+    npx prisma migrate dev --name init-school-schema
+    npx prisma db seed
     ```
+    As credenciais de teste são:
+    * **Professor:** `professor@escola.com` | `senha.professor`
+    * **Aluno:** `aluno@escola.com` | `senha.aluno`
 
-5.  **Ligar a API:**
-    Último passo! Acende a API:
-
+5.  **Roda a API:**
+    Agora é só ligar o servidor!
     ```bash
     npm run dev
     ```
-    Quando você vir `Server is running on port 3333` no terminal, pronto! A API tá no ar e esperando as chamadas.
+    Se aparecer `Server is running on port 3333`, deu tudo certo! A API tá no ar.
 
 ---
 
-## 🧪 Pra Testar na Prática (Postman/Insomnia)
+## 🧪 Testando a API (com Postman ou Insomnia)
 
-Com a API ligada (passo 5), você pode usar o Postman/Insomnia pra mandar umas requisições.
+A forma mais fácil de testar é importar o arquivo **`api_docs.postman_collection.json`** no seu Postman. Lá tem todas as requisições prontas.
 
-* **Endereço Base:** `http://localhost:3333`
+Mas se quiser fazer na mão, aqui vai um guia rápido:
 
-* **Pra criar um Produtor:**
-    * **Método:** `POST`
-    * **Rota:** `/producers`
-    * **No Body (Corpo da requisição):** Manda um JSON com os dados do produtor. No Postman, escolhe `raw` e `JSON`. Ah, e o CPF/CNPJ tem que ser válido! Pega um num gerador online tipo 4Devs.
+#### 1. Fazer Login
 
-* **Pra ver a lista de Produtores:**
-    * **Método:** `GET`
-    * **Rota:** `/producers`
+Primeiro, você precisa de um token. Manda um `POST` pra `/login` com as credenciais do professor ou do aluno.
 
-* **Pra ver as estatísticas (Dashboard):**
-    * **Método:** `GET`
-    * **Rota:** `/dashboard`
+* `POST http://localhost:3333/login`
+    ```json
+    {
+        "email": "professor@escola.com",
+        "password": "senha.professor"
+    }
+    ```
+    A resposta vai te dar um `token`. **Copia ele!** Você vai precisar dele pra todas as outras requisições.
+
+#### 2. Rotas do Professor (usar o token de professor)
+
+* **Ver todos os alunos:**
+    * `GET http://localhost:3333/admin/students`
+    * **Dica:** Tente usar filtros na URL! Ex: `?name=Fulano` ou `?situation=Aprovado&limit=5`.
+
+* **Criar um novo aluno:**
+    * `POST http://localhost:3333/admin/students`
+    * No **Body**, manda um JSON com os dados do novo aluno.
+
+* `PUT /admin/students/:id` e `DELETE /admin/students/:id` também estão disponíveis pra atualizar e deletar.
+
+#### 3. Rotas do Aluno (usar o token de aluno)
+
+* **Ver minhas notas:**
+    * `GET http://localhost:3333/student/scores`
+
+Para todas as rotas (exceto `/login`), lembre-se de ir na aba **Authorization**, escolher **Bearer Token** e colar o token que você copiou.
 
 ---
 
