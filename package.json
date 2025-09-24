@@ -1,0 +1,43 @@
+{
+  "name": "teste-tecnico-back-end",
+  "version": "1.0.0",
+  "description": "Olá, candidato! Este desafio tem como objetivo avaliar suas habilidades na construção de uma API RESTful robusta, segura e bem documentada. Você deverá construir o back-end que servirá a uma aplicação de front-end.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only --ignore-watch node_modules src/server.ts",
+  "seed": "ts-node prisma/seed.ts"
+  },
+  "prisma": {
+  "seed": "ts-node prisma/seed.ts"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felipesergio353/teste-tecnico-back-end.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/felipesergio353/teste-tecnico-back-end/issues"
+  },
+  "homepage": "https://github.com/felipesergio353/teste-tecnico-back-end#readme",
+  "dependencies": {
+    "@prisma/client": "^6.16.2",
+    "bcryptjs": "^3.0.2",
+    "cpf-cnpj-validator": "^1.0.3",
+    "express": "^4.21.2",
+    "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.5.2",
+    "prisma": "^6.16.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.2"
+  }
+}
